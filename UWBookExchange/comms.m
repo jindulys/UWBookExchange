@@ -7,7 +7,9 @@
 //
 
 #import "comms.h"
+#import "NSOperationQueue+SharedQueue.h"
 
+NSString *const N_ImageDownloaded = @"N_ImageDownloaded";
 @implementation comms
 
 +(void)login:(id<commsDelegate>)delegate
@@ -36,10 +38,17 @@
                     [[PFUser currentUser] saveInBackground];
                     [[DataStore sharedInstance].fbFriends setObject:me forKey:me.id];
                 }
-                
-                if ([delegate respondsToSelector:@selector(commsDidLogin:)]) {
-                    [delegate commsDidLogin:YES];
-                }
+                FBRequest *friendsRequest = [FBRequest requestForMyFriends];
+                [friendsRequest startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                    NSArray *friends = result[@"data"];
+                    for (NSDictionary <FBGraphUser> *friend in friends ) {
+                        NSLog(@"My friend %@",friend.name);
+                        [[DataStore sharedInstance].fbFriends setObject:friend forKey:friend.id];
+                    }
+                    if ([delegate respondsToSelector:@selector(commsDidLogin:)]) {
+                        [delegate commsDidLogin:YES];
+                    }
+                }];
             }];
         }
     }];
@@ -47,7 +56,7 @@
 
 +(void)uploadImage:(UIImage *)image withBookName:(NSString *)bookName withPrice:(NSString *)price withMajor:(NSString *)major withComment:(NSString *)comment forDelegate:(id<commsDelegate>)delegate{
     NSData *bookImgData = UIImagePNGRepresentation(image);
-    PFFile *bookFile = [PFFile fileWithName:@"bookImg" data:bookImgData];
+    PFFile *bookFile = [PFFile fileWithName:@"img" data:bookImgData];
     [bookFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             PFObject *bookImageObject = [PFObject objectWithClassName:@"bookImg"];
@@ -95,6 +104,44 @@
     } progressBlock:^(int percentDone) {
         if ([delegate respondsToSelector:@selector(commsUploadImageProgress:)]) {
             [delegate commsUploadImageProgress:percentDone];
+        }
+    }];
+}
+
++(void)getBookImagesSince:(NSDate *)lastUpdate forDelegate:(id<commsDelegate>)delegate{
+    NSArray *meAndFriends = [DataStore sharedInstance].fbFriends.allKeys;
+    PFQuery *bookQuery = [PFQuery queryWithClassName:@"bookImg"];
+    [bookQuery orderByAscending:@"createdAt"];
+    [bookQuery whereKey:@"updatedAt" greaterThan:lastUpdate];
+    [bookQuery whereKey:@"userFBId" containedIn:meAndFriends];
+    [bookQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        __block NSDate *newLastDate = lastUpdate;
+        if (error) {
+            NSLog(@"Error occurs and is %@",error.localizedDescription);
+        }else{
+            [objects enumerateObjectsUsingBlock:^(PFObject *bookImg, NSUInteger idx, BOOL *stop) {
+                //1. get the user FBGraphUser
+                NSDictionary<FBGraphUser> *user = [[DataStore sharedInstance].fbFriends objectForKey:bookImg[@"userFBId"]];
+                bookImgInfo *bookImageInfo = [[bookImgInfo alloc] init];
+                [[NSOperationQueue pffileOperationQueue] addOperationWithBlock:^{
+                    bookImageInfo.image = [UIImage imageWithData:[(PFFile *)bookImg[@"image"] getData]];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:N_ImageDownloaded object:nil];
+                }];
+                
+                bookImageInfo.objectId = bookImg.objectId;
+                
+                bookImageInfo.user = user;
+                bookImageInfo.createdDate = bookImg.createdAt;
+                if ([bookImg.updatedAt compare:newLastDate]==NSOrderedDescending) {
+                    newLastDate = bookImg.updatedAt;
+                }
+                //2. store the wrapped bookImgInfo object
+                [[DataStore sharedInstance].bookImgs insertObject:bookImageInfo atIndex:0];
+                [[DataStore sharedInstance].bookMaps setObject:bookImageInfo forKey:bookImageInfo.objectId];
+            }];
+        }
+        if ([delegate respondsToSelector:@selector(commsDidGetNewBookImages:)]) {
+            [delegate commsDidGetNewBookImages:newLastDate];
         }
     }];
 }

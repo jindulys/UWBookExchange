@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface bookCommentCell : UITableViewCell
-
+@property (nonatomic, strong) IBOutlet UIImageView* userPic;
+@property (nonatomic, strong) IBOutlet UILabel* comment;
+@property (nonatomic, strong) IBOutlet UILabel* userName;
 @end

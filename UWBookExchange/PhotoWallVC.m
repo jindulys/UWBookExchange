@@ -12,8 +12,10 @@
 #import "bookImgCell.h"
 #import "commentPublishCell.h"
 
-@interface PhotoWallVC ()
-
+@interface PhotoWallVC ()<commsDelegate>{
+    NSDate *_lastImageUpdate;
+    NSDateFormatter *_commDateFormatter;
+}
 @end
 
 @implementation PhotoWallVC
@@ -37,9 +39,14 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.navigationItem setTitleView:[[NavigationTitleView alloc] initWithTitle:@"ImageWall"]];
-    [self.tableView registerNib:[UINib nibWithNibName:@"bookImgCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"bookImgCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"bookCommentCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"bookCommentCell"];
-    [self.tableView registerNib:[UINib nibWithNibName:@"commentPublishCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"commentPublishCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"bookImgCell" bundle:nil] forCellReuseIdentifier:@"bookImgCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"bookCommentCell" bundle:nil] forCellReuseIdentifier:@"bookCommentCell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"commentPublishCell" bundle:nil] forCellReuseIdentifier:@"commentPublishCell"];
+    _lastImageUpdate = [NSDate distantPast];
+    _commDateFormatter = [[NSDateFormatter alloc] init];
+    [_commDateFormatter setDateFormat:@"MMM d, h:mm a"];
+    [comms getBookImagesSince:_lastImageUpdate forDelegate:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageDownLoaded:) name:N_ImageDownloaded object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -78,18 +85,20 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)imageDownLoaded:(NSNotification *)notification{
+    [self.tableView reloadData];
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return [[DataStore sharedInstance].bookImgs count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return 0;
 }
@@ -101,6 +110,14 @@
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     static NSString* bookImgCellIdentifier = @"bookImgCell";
     bookImgCell* cell = (bookImgCell *)[tableView dequeueReusableCellWithIdentifier:bookImgCellIdentifier];
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"bookImgCell" owner:self options:nil];
+        cell = (bookImgCell *)[topLevelObjects objectAtIndex:0];
+    }
+    bookImgInfo *bookImg = [[DataStore sharedInstance].bookImgs objectAtIndex:section];
+    [cell.bookPic setImage:bookImg.image];
+    [cell.userName setText:bookImg.user.username];
+    [cell.seedDate setText:[_commDateFormatter stringFromDate:bookImg.createdDate]];
     return cell;
 }
 
@@ -112,6 +129,12 @@
     // Configure the cell...
     
     return cell;
+}
+
+#pragma mark - commsDelegate
+-(void)commsDidGetNewBookImages:(NSDate *)updated{
+    _lastImageUpdate = updated;
+    [self.tableView reloadData];
 }
 
 /*
@@ -164,5 +187,9 @@
 }
 
  */
+
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 @end

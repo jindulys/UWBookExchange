@@ -27,7 +27,7 @@
 
 @implementation DataStore
 static DataStore* instance = nil;
-+(DataStore *)instance{
++(DataStore *)sharedInstance{
     @synchronized(self){
         if (instance == nil) {
             instance = [[DataStore alloc] init];

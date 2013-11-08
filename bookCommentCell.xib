@@ -4,15 +4,15 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="bookCommentCell">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner">
             <connections>
-                <outlet property="comment" destination="HuJ-iJ-MNb" id="Ycp-Zf-Ze9"/>
-                <outlet property="userName" destination="hR4-Q2-qGt" id="Q4V-Ie-hG6"/>
-                <outlet property="userPic" destination="Hib-IZ-DMg" id="nbb-ZE-ZFW"/>
+                <outlet property="comment" destination="HuJ-iJ-MNb" id="aLj-fa-hh7"/>
+                <outlet property="userName" destination="hR4-Q2-qGt" id="XbW-ZG-Rb1"/>
+                <outlet property="userPic" destination="Hib-IZ-DMg" id="8HU-Da-Jvc"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="79" id="uKw-fC-RMx">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="79" id="uKw-fC-RMx" customClass="bookCommentCell">
             <rect key="frame" x="0.0" y="0.0" width="320" height="79"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uKw-fC-RMx" id="NN9-Jj-xh8">
@@ -38,6 +38,11 @@
                     </label>
                 </subviews>
             </tableViewCellContentView>
+            <connections>
+                <outlet property="comment" destination="HuJ-iJ-MNb" id="SCO-qr-j7H"/>
+                <outlet property="userName" destination="hR4-Q2-qGt" id="erb-Hk-URQ"/>
+                <outlet property="userPic" destination="Hib-IZ-DMg" id="J6e-8r-a4g"/>
+            </connections>
         </tableViewCell>
     </objects>
 </document>

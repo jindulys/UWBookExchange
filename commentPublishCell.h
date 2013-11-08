@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface commentPublishCell : UITableViewCell
-
+@property (nonatomic, strong) IBOutlet UITextField* txtComment;
 @end

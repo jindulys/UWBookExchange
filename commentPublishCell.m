@@ -9,7 +9,7 @@
 #import "commentPublishCell.h"
 
 @interface commentPublishCell()<UITextFieldDelegate>
-@property (nonatomic, strong) IBOutlet UITextField* txtComment;
+
 @end
 
 @implementation commentPublishCell
