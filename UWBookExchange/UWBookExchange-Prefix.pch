@@ -14,4 +14,11 @@
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
     #import <CoreData/CoreData.h>
+    #import "Utilities.h"
+    #import <Parse/Parse.h>
+    #import "DataStore.h"
+    #import "comms.h"
+    #import "define.h"
+    #import "UIFont+Additions.h"
+    #import "NavigationTitleView.h"
 #endif

@@ -7,6 +7,7 @@
 //
 
 #import "UWBEAppDelegate.h"
+#import "LoginVC.h"
 
 @implementation UWBEAppDelegate
 
@@ -18,7 +19,13 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    [Parse setApplicationId:@"GobiDSoDeMiOT005StvPhjsr1G2syzYswOo8aPxN" clientKey:@"a9UJ5uMQc0p8nrHLmqXCbsCBtEu0diJUkB9GMqym"];
+    
+    [PFFacebookUtils initializeFacebook];
     self.window.backgroundColor = [UIColor whiteColor];
+    LoginVC *login = [[LoginVC alloc] init];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
+    self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
     return YES;
 }
@@ -144,6 +151,17 @@
 - (NSURL *)applicationDocumentsDirectory
 {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+#pragma mark - Application handle URL callbacks
+-(BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    return [PFFacebookUtils handleOpenURL:url];
+}
+
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [PFFacebookUtils handleOpenURL:url];
 }
 
 @end
