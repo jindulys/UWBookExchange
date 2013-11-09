@@ -19,4 +19,13 @@
     return pffileQueue;
 }
 
++(NSOperationQueue *)profilePictureOperationQueue{
+    static NSOperationQueue *profileQueue = nil;
+    if (profileQueue == nil) {
+        profileQueue = [[NSOperationQueue alloc] init];
+        [profileQueue setName:@"com.uwaterloo.jind.profile"];
+    }
+    return profileQueue;
+}
+
 @end

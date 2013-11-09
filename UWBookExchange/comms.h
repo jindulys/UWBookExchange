@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 extern NSString * const N_ImageDownloaded;
+extern NSString * const N_ProfilePictureLoaded;
 
 @protocol commsDelegate <NSObject>
 
@@ -17,6 +18,7 @@ extern NSString * const N_ImageDownloaded;
 -(void)commsUploadImageProgress:(short)progress;
 -(void)commsUploadImageFinished:(BOOL)success;
 -(void)commsDidGetNewBookImages:(NSDate *)updated;
+-(void)commsDidGetNewBookImageComments:(NSDate *)updated;
 @end
 
 @interface comms : NSObject
@@ -24,5 +26,6 @@ extern NSString * const N_ImageDownloaded;
 +(void)login:(id<commsDelegate>)delegate;
 +(void)uploadImage:(UIImage *)image withBookName:(NSString *)bookName withPrice:(NSString *)price withMajor:(NSString *)major withComment:(NSString *)comment forDelegate:(id<commsDelegate>)delegate;
 +(void)getBookImagesSince:(NSDate *)lastUpdate forDelegate:(id<commsDelegate>)delegate;
++(void)getBookImageCommentsSince:(NSDate *)lastUpdate forDelegate:(id<commsDelegate>)delegate;
 
 @end

@@ -10,4 +10,5 @@
 
 @interface NSOperationQueue (SharedQueue)
 +(NSOperationQueue *)pffileOperationQueue;
++(NSOperationQueue *)profilePictureOperationQueue;
 @end

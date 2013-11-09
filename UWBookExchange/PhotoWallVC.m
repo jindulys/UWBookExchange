@@ -15,6 +15,7 @@
 @interface PhotoWallVC ()<commsDelegate>{
     NSDate *_lastImageUpdate;
     NSDateFormatter *_commDateFormatter;
+    NSDate *_lastCommentUpdate;
 }
 @end
 
@@ -43,10 +44,12 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"bookCommentCell" bundle:nil] forCellReuseIdentifier:@"bookCommentCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"commentPublishCell" bundle:nil] forCellReuseIdentifier:@"commentPublishCell"];
     _lastImageUpdate = [NSDate distantPast];
+    _lastCommentUpdate = [NSDate distantPast];
     _commDateFormatter = [[NSDateFormatter alloc] init];
     [_commDateFormatter setDateFormat:@"MMM d, h:mm a"];
     [comms getBookImagesSince:_lastImageUpdate forDelegate:self];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageDownLoaded:) name:N_ImageDownloaded object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageDownLoaded:) name:N_ProfilePictureLoaded object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -100,7 +103,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 0;
+    bookImgInfo *bookInfo = [[DataStore sharedInstance].bookImgs objectAtIndex:section];
+    
+    return bookInfo.comments.count;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -118,22 +123,39 @@
     [cell.bookPic setImage:bookImg.image];
     [cell.userName setText:bookImg.user.username];
     [cell.seedDate setText:[_commDateFormatter stringFromDate:bookImg.createdDate]];
+    [cell.bookMajor setText:bookImg.bookMajor];
+    [cell.bookPrice setText:bookImg.bookPrice];
+    [cell.bookName setText:bookImg.bookName];
+    [cell.userPic setImage:bookImg.user[@"fbProfilePicture"]];
     return cell;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"bookCommentCell";
-    bookCommentCell* cell = (bookCommentCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
+    bookCommentCell* cell = (bookCommentCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"bookCommentCell" owner:self options:nil];
+        cell = (bookCommentCell *)[topLevelObjects objectAtIndex:0];
+    }
     // Configure the cell...
-    
+    bookImgInfo *bookInfo = [[DataStore sharedInstance].bookImgs objectAtIndex:indexPath.section];
+    bookComment *comment = [bookInfo.comments objectAtIndex:indexPath.row];
+    [cell.userPic setImage:comment.user[@"fbProfilePicture"]];
+    [cell.userName setText:comment.user.username];
+    [cell.comment setText:comment.comment];
     return cell;
 }
 
 #pragma mark - commsDelegate
 -(void)commsDidGetNewBookImages:(NSDate *)updated{
     _lastImageUpdate = updated;
+    [comms getBookImageCommentsSince:_lastCommentUpdate forDelegate:self];
+    [self.tableView reloadData];
+}
+
+-(void)commsDidGetNewBookImageComments:(NSDate *)updated{
+    _lastCommentUpdate = updated;
     [self.tableView reloadData];
 }
 
