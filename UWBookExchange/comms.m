@@ -11,6 +11,9 @@
 
 NSString *const N_ImageDownloaded = @"N_ImageDownloaded";
 NSString *const N_ProfilePictureLoaded = @"N_ProfilePictureLoaded";
+NSString *const N_CommentUploaded = @"N_CommentUploaded";
+NSString *const N_ImageUploaded = @"N_ImageUploaded";
+
 @implementation comms
 
 +(void)login:(id<commsDelegate>)delegate
@@ -189,6 +192,18 @@ NSString *const N_ProfilePictureLoaded = @"N_ProfilePictureLoaded";
             }
         }
     }];
+}
+
++(void)addComment:(NSString *)comment toBookImage:(bookImgInfo *)bookImage{
+    PFObject *newBookComment = [PFObject objectWithClassName:@"bookComment"];
+    newBookComment[@"comment"]= comment;
+    newBookComment[@"userFBId"] = [[PFUser currentUser] objectForKey:@"fbId"];
+    newBookComment[@"user"] = [PFUser currentUser].username;
+    newBookComment[@"bookImgObjectId"] = bookImage.objectId;
+    [newBookComment saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:N_CommentUploaded object:nil];
+    }];
+    
 }
 
 @end

@@ -8,7 +8,7 @@
 
 #import "commentPublishCell.h"
 
-@interface commentPublishCell()<UITextFieldDelegate>
+@interface commentPublishCell()
 
 @end
 
@@ -30,8 +30,6 @@
     // Configure the view for the selected state
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
-    return YES;
-}
+
 
 @end

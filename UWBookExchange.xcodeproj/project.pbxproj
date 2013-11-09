@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8A0D3A6C182DE9F4006FE701 /* UIView+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A0D3A6B182DE9F4006FE701 /* UIView+Additions.m */; };
 		8A4845A3182D74D700DCBCBB /* NSOperationQueue+SharedQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A4845A2182D74D700DCBCBB /* NSOperationQueue+SharedQueue.m */; };
 		8A4BDA6E182D2A7300C5D5CC /* bookImgCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A4BDA6D182D2A7300C5D5CC /* bookImgCell.m */; };
 		8A544D8E18298E7F00140853 /* NavigationTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A544D8D18298E7F00140853 /* NavigationTitleView.m */; };
@@ -72,6 +73,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8A0D3A6A182DE9F4006FE701 /* UIView+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Additions.h"; sourceTree = "<group>"; };
+		8A0D3A6B182DE9F4006FE701 /* UIView+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Additions.m"; sourceTree = "<group>"; };
 		8A4845A1182D74D700DCBCBB /* NSOperationQueue+SharedQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSOperationQueue+SharedQueue.h"; sourceTree = "<group>"; };
 		8A4845A2182D74D700DCBCBB /* NSOperationQueue+SharedQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSOperationQueue+SharedQueue.m"; sourceTree = "<group>"; };
 		8A4BDA6C182D2A7300C5D5CC /* bookImgCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bookImgCell.h; sourceTree = "<group>"; };
@@ -191,6 +194,8 @@
 				8A544D92182990A200140853 /* UIFont+Additions.m */,
 				8A701C04182C59E900223C54 /* UIImage+Scaling.h */,
 				8A701C05182C59E900223C54 /* UIImage+Scaling.m */,
+				8A0D3A6A182DE9F4006FE701 /* UIView+Additions.h */,
+				8A0D3A6B182DE9F4006FE701 /* UIView+Additions.m */,
 			);
 			name = additions;
 			sourceTree = "<group>";
@@ -444,6 +449,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A0D3A6C182DE9F4006FE701 /* UIView+Additions.m in Sources */,
 				8A4BDA6E182D2A7300C5D5CC /* bookImgCell.m in Sources */,
 				8AB433FC182D2AC80086BF28 /* bookCommentCell.m in Sources */,
 				8ACF40E0181EECDE00D59C95 /* main.m in Sources */,

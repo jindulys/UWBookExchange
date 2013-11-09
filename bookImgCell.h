@@ -16,5 +16,4 @@
 @property (nonatomic, strong) IBOutlet UILabel *bookMajor;
 @property (nonatomic, strong) IBOutlet UILabel* seedDate;
 @property (nonatomic, strong) IBOutlet UILabel* userName;
-
 @end

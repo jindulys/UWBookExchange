@@ -11,8 +11,9 @@
 #import "bookCommentCell.h"
 #import "bookImgCell.h"
 #import "commentPublishCell.h"
+#import "UIView+Additions.h"
 
-@interface PhotoWallVC ()<commsDelegate>{
+@interface PhotoWallVC ()<commsDelegate,UITextFieldDelegate>{
     NSDate *_lastImageUpdate;
     NSDateFormatter *_commDateFormatter;
     NSDate *_lastCommentUpdate;
@@ -50,6 +51,8 @@
     [comms getBookImagesSince:_lastImageUpdate forDelegate:self];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageDownLoaded:) name:N_ImageDownloaded object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageDownLoaded:) name:N_ProfilePictureLoaded object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commentUpload:) name:N_CommentUploaded object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageUpload:) name:N_ImageUploaded object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -88,8 +91,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)imageUpload:(NSNotification *)notification{
+    [comms getBookImagesSince:_lastImageUpdate forDelegate:self];
+}
+
 -(void)imageDownLoaded:(NSNotification *)notification{
     [self.tableView reloadData];
+}
+
+-(void)commentUpload:(NSNotification *)notification{
+    [comms getBookImageCommentsSince:_lastCommentUpdate forDelegate:self];
 }
 
 #pragma mark - Table view data source
@@ -105,7 +116,7 @@
     // Return the number of rows in the section.
     bookImgInfo *bookInfo = [[DataStore sharedInstance].bookImgs objectAtIndex:section];
     
-    return bookInfo.comments.count;
+    return bookInfo.comments.count+1;
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -130,6 +141,10 @@
     return cell;
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 90;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"bookCommentCell";
@@ -140,10 +155,21 @@
     }
     // Configure the cell...
     bookImgInfo *bookInfo = [[DataStore sharedInstance].bookImgs objectAtIndex:indexPath.section];
-    bookComment *comment = [bookInfo.comments objectAtIndex:indexPath.row];
-    [cell.userPic setImage:comment.user[@"fbProfilePicture"]];
-    [cell.userName setText:comment.user.username];
-    [cell.comment setText:comment.comment];
+    if (indexPath.row < bookInfo.comments.count) {
+        bookComment *comment = [bookInfo.comments objectAtIndex:indexPath.row];
+        [cell.userPic setImage:comment.user[@"fbProfilePicture"]];
+        [cell.userName setText:comment.user.username];
+        [cell.comment setText:comment.comment];
+    }
+   
+    static NSString *commentCellIdentifier = @"commentPublishCell";
+    if (indexPath.row >= bookInfo.comments.count) {
+        commentPublishCell* newCell = (commentPublishCell *)[tableView dequeueReusableCellWithIdentifier:commentCellIdentifier];
+        newCell.txtComment.delegate = self;
+        newCell.bookImage = bookInfo;
+        return newCell;
+    }
+    
     return cell;
 }
 
@@ -157,6 +183,21 @@
 -(void)commsDidGetNewBookImageComments:(NSDate *)updated{
     _lastCommentUpdate = updated;
     [self.tableView reloadData];
+}
+
+
+#pragma mark - UITextFieldDelegate
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    if (textField.text.length == 0) {
+        [textField resignFirstResponder];
+        return YES;
+    }
+    [textField resignFirstResponder];
+    commentPublishCell *cell = [UIView getSpecificNextResponder:textField class:[commentPublishCell class]];
+    [comms addComment:textField.text toBookImage:cell.bookImage];
+    [textField setText:@""];
+    
+    return YES;
 }
 
 /*

@@ -165,6 +165,7 @@
                           cancelButtonTitle:@"Ok"
                           otherButtonTitles:nil] show];
 	}
+    [[NSNotificationCenter defaultCenter] postNotificationName:N_ImageUploaded object:nil];
 }
 
 

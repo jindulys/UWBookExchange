@@ -10,6 +10,8 @@
 
 extern NSString * const N_ImageDownloaded;
 extern NSString * const N_ProfilePictureLoaded;
+extern NSString * const N_CommentUploaded;
+extern NSString * const N_ImageUploaded;
 
 @protocol commsDelegate <NSObject>
 
@@ -27,5 +29,5 @@ extern NSString * const N_ProfilePictureLoaded;
 +(void)uploadImage:(UIImage *)image withBookName:(NSString *)bookName withPrice:(NSString *)price withMajor:(NSString *)major withComment:(NSString *)comment forDelegate:(id<commsDelegate>)delegate;
 +(void)getBookImagesSince:(NSDate *)lastUpdate forDelegate:(id<commsDelegate>)delegate;
 +(void)getBookImageCommentsSince:(NSDate *)lastUpdate forDelegate:(id<commsDelegate>)delegate;
-
++(void)addComment:(NSString *)comment toBookImage:(bookImgInfo *)bookImage;
 @end

@@ -10,4 +10,5 @@
 
 @interface commentPublishCell : UITableViewCell
 @property (nonatomic, strong) IBOutlet UITextField* txtComment;
+@property (nonatomic, strong) bookImgInfo *bookImage;
 @end
